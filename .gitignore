@@ -1,0 +1,25 @@
+# Build
+build/
+
+# VSCode
+.vscode/
+
+# CLion
+.idea/
+
+# Visual Studio
+.vs/
+
+# Executable
+*.exe
+
+# Object files
+*.o
+*.obj
+
+# Libraries
+*.a
+*.lib
+
+# Debug
+*.pdb
