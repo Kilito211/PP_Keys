@@ -6,8 +6,8 @@
 
 typedef enum
 {
-    APP_STATE_IDLE = 0,
-    APP_STATE_RUNNING,
+    APP_STATE_IDLE = 0, // 空闲状态
+    APP_STATE_RUNNING, // 运行状态
 } app_state_t;
 
 bool state_machine_init(void);

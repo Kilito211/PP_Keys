@@ -12,6 +12,7 @@
 #include "app_event.h"
 #include "window.h"
 #include "hotkey.h"
+#include "state_machine.h"
 #include <stdio.h>
 
 bool app_init(void)
@@ -19,8 +20,15 @@ bool app_init(void)
     if (!app_event_init())
         return false;
 
+    if (!state_machine_init())
+    {
+        app_event_deinit();
+        return false;
+    }
+
     if (!hotkey_init())
     {
+        state_machine_deinit();
         app_event_deinit();
         return false;
     }
@@ -28,6 +36,7 @@ bool app_init(void)
     if (!window_init())
     {
         hotkey_deinit();
+        state_machine_deinit();
         app_event_deinit();
         return false;
     }
@@ -36,6 +45,7 @@ bool app_init(void)
     {
         window_deinit();
         hotkey_deinit();
+        state_machine_deinit();
         app_event_deinit();
         return false;
     }
@@ -56,5 +66,6 @@ void app_deinit(void)
     hotkey_stop_listen();
     window_deinit();
     hotkey_deinit();
+    state_machine_deinit();
     app_event_deinit();
 }

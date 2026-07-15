@@ -10,6 +10,7 @@
  */
 
 #include "app_event.h"
+#include "state_machine.h"
 #include <stdio.h>
 
 static void app_event_dispatch(app_event_t event);
@@ -62,7 +63,7 @@ static void app_event_dispatch(app_event_t event)
     case APP_EVENT_NONE:
         break;
     case APP_EVENT_START:
-        printf("APP_EVENT_START received\n");
+        state_machine_handle_event(event);
         break;
     case APP_EVENT_STOP:
         break;
