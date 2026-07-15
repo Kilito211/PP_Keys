@@ -13,7 +13,10 @@
 #include "window.h"
 #include "hotkey.h"
 #include "state_machine.h"
+#include "action_list.h"
 #include <stdio.h>
+
+#define DEBUG 0
 
 bool app_init(void)
 {
@@ -49,6 +52,29 @@ bool app_init(void)
         app_event_deinit();
         return false;
     }
+
+#ifdef DEBUG
+    macro_action_t action =
+        {
+            .key = 0x41,
+            .delay_ms = 100,
+        };
+    macro_action_t action_1 =
+        {
+            .key = VK_F9,
+            .delay_ms = 200,
+        };
+
+    action_list_add(&action);
+    action_list_add(&action_1);
+    uint8_t action_count = action_list_get_count();
+    printf("APP: Action count=%lu\n", action_count);
+    for (int i = 0; i < action_count;i++)
+    {
+        macro_action_t *temp = action_list_get(i);
+        printf("APP: Action%d -> Kye:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
+    }
+#endif // DEBUG
 
     printf("APP Init Success\n");
     return true;
