@@ -2,6 +2,7 @@
 #define HOTKEY_H
 
 #include <stdbool.h>
+#include <windows.h>
 
 typedef enum
 {
@@ -10,11 +11,18 @@ typedef enum
     HOTKEY_ID_MAX,
 } hotkey_id_t;
 
+typedef struct
+{
+    bool registered;
+    hotkey_id_t id;
+
+} hotkey_t;
+
 bool hotkey_init(void);
 
-bool hotkey_register(hotkey_id_t id, unsigned int vk);
+bool hotkey_start_listen(HWND hwnd);
 
-void hotkey_unregister(hotkey_id_t id);
+void hotkey_stop_listen(void);
 
 bool hotkey_process(unsigned int id);
 

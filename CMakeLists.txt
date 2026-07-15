@@ -15,6 +15,7 @@ set(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 set(CMAKE_C_USE_RESPONSE_FILE_FOR_LIBRARIES OFF)
 set(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS OFF)
 
+add_subdirectory(core)
 add_subdirectory(platform)
 add_subdirectory(app)
 

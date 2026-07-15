@@ -11,4 +11,5 @@ target_include_directories(ppkeys_app
 target_link_libraries(ppkeys_app
     PRIVATE
         ppkeys_platform
+        ppkeys_core
 )

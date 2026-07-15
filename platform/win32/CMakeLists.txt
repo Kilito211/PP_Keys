@@ -1,5 +1,6 @@
 add_library(ppkeys_platform
     window.c
+    message_loop.c
 )
 
 target_include_directories(ppkeys_platform
@@ -10,4 +11,5 @@ target_include_directories(ppkeys_platform
 target_link_libraries(ppkeys_platform
     PRIVATE
         user32
+        ppkeys_core
 )
