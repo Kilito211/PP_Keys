@@ -8,15 +8,20 @@
  * @copyright Copyright (c) 2026
  *
  */
+#define DEBUG 0
+
 #include "app.h"
 #include "app_event.h"
 #include "window.h"
 #include "hotkey.h"
 #include "state_machine.h"
-#include "action_list.h"
 #include <stdio.h>
 
-#define DEBUG 0
+#if DEBUG
+#include "action_list.h"
+#include "keyboard.h"
+#endif // DEBUG
+
 
 bool app_init(void)
 {
@@ -26,6 +31,7 @@ bool app_init(void)
     if (!action_list_init())
     {
         app_event_deinit();
+        return false;
     }
 
     if (!state_machine_init())
@@ -85,6 +91,7 @@ bool app_init(void)
     }
 #endif // DEBUG
 
+    keyboard_press(VK_F8);
     printf("APP Init Success\n");
     return true;
 }
