@@ -23,8 +23,14 @@ bool app_init(void)
     if (!app_event_init())
         return false;
 
+    if (!action_list_init())
+    {
+        app_event_deinit();
+    }
+
     if (!state_machine_init())
     {
+        action_list_deinit();
         app_event_deinit();
         return false;
     }
@@ -32,6 +38,7 @@ bool app_init(void)
     if (!hotkey_init())
     {
         state_machine_deinit();
+        action_list_deinit();
         app_event_deinit();
         return false;
     }
@@ -40,6 +47,7 @@ bool app_init(void)
     {
         hotkey_deinit();
         state_machine_deinit();
+        action_list_deinit();
         app_event_deinit();
         return false;
     }
@@ -49,11 +57,12 @@ bool app_init(void)
         window_deinit();
         hotkey_deinit();
         state_machine_deinit();
+        action_list_deinit();
         app_event_deinit();
         return false;
     }
 
-#ifdef DEBUG
+#if DEBUG
     macro_action_t action =
         {
             .key = 0x41,
@@ -67,12 +76,12 @@ bool app_init(void)
 
     action_list_add(&action);
     action_list_add(&action_1);
-    uint8_t action_count = action_list_get_count();
+    uint32_t action_count = action_list_get_count();
     printf("APP: Action count=%lu\n", action_count);
-    for (int i = 0; i < action_count;i++)
+    for (int i = 0; i < action_count; i++)
     {
         macro_action_t *temp = action_list_get(i);
-        printf("APP: Action%d -> Kye:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
+        printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
     }
 #endif // DEBUG
 
@@ -93,5 +102,6 @@ void app_deinit(void)
     window_deinit();
     hotkey_deinit();
     state_machine_deinit();
+    action_list_deinit();
     app_event_deinit();
 }

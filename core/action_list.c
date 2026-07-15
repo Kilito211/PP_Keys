@@ -23,7 +23,7 @@ static uint32_t s_action_count = 0;                    // 按键数量计数
 bool action_list_init(void)
 {
     s_action_count = 0;
-    return 0;
+    return true;
 }
 
 /**
@@ -84,5 +84,5 @@ void action_list_clear(void)
  */
 void action_list_deinit(void)
 {
-    
+    action_list_clear();
 }
