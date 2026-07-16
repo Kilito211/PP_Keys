@@ -25,7 +25,7 @@ static HWND s_btn_start = NULL;
  */
 bool ui_win32_init(HWND parent)
 {
-    s_btn_start = CreateWindowExW(0, L"BUTTON", L"Start/Stop", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 20, 20, 140, 40, parent, (HMENU)IDC_BTN_START, GetModuleHandleW(NULL), NULL);
+    s_btn_start = CreateWindowExW(0, L"BUTTON", L"Start/Stop", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 20, 20, 70, 30, parent, (HMENU)IDC_BTN_START, GetModuleHandleW(NULL), NULL);
 
     if (s_btn_start == NULL)
         return false;

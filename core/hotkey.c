@@ -15,6 +15,7 @@
 #include <windows.h>
 
 static HWND s_hWnd = NULL;
+static uint16_t s_hotkey = VK_F8;
 
 /**
  * @brief 初始化热键模块
@@ -38,7 +39,7 @@ bool hotkey_start_listen(HWND hwnd)
 {
     s_hWnd = hwnd;
 
-    if (!RegisterHotKey(s_hWnd, HOTKEY_ID_START, 0, VK_F8)) // 注册热键， NULL：系统级热键
+    if (!RegisterHotKey(s_hWnd, HOTKEY_ID_START, 0, s_hotkey)) // 注册热键
     {
         printf("RegisterHotKey failed, error=%lu\n", GetLastError());
         return false;
@@ -84,4 +85,27 @@ bool hotkey_process(unsigned int id)
 void hotkey_deinit(void)
 {
     // hotkey_stop_listen();
+}
+
+/**
+ * @brief 自定义热键接口
+ * 
+ * @param key 键值
+ * @return true 成功
+ * @return false 失败
+ */
+bool hotkey_set(uint16_t key)
+{
+    s_hotkey = key;
+    return true;
+}
+
+/**
+ * @brief 获取当前热键
+ * 
+ * @return uint16_t 当前热键键值
+ */
+uint16_t hotkey_get(void)
+{
+    return s_hotkey;
 }
