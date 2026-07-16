@@ -15,10 +15,11 @@
 #include "window.h"
 #include "hotkey.h"
 #include "state_machine.h"
+#include "action_list.h"
+#include "macro_engine.h"
 #include <stdio.h>
 
 #if DEBUG
-#include "action_list.h"
 #include "keyboard.h"
 #endif // DEBUG
 
@@ -68,6 +69,16 @@ bool app_init(void)
         return false;
     }
 
+    if (!macro_engine_init())
+    {
+        hotkey_stop_listen();
+        hotkey_deinit();
+        window_deinit();
+        state_machine_deinit();
+        action_list_deinit();
+        app_event_deinit();
+    }
+
 #if DEBUG
     macro_action_t action =
         {
@@ -89,10 +100,12 @@ bool app_init(void)
         macro_action_t *temp = action_list_get(i);
         printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
     }
+
+    macro_engine_start();
+
 #endif // DEBUG
 
-    keyboard_press(VK_F8);
-    printf("APP Init Success\n");
+        printf("APP Init Success\n");
     return true;
 }
 
@@ -105,6 +118,7 @@ void app_run(void)
 
 void app_deinit(void)
 {
+    macro_engine_deinit();
     hotkey_stop_listen();
     window_deinit();
     hotkey_deinit();

@@ -50,7 +50,7 @@ void state_machine_handle_event(app_event_t event)
     case APP_STATE_RUNNING: // 当前为运行中
         switch (event)
         {
-        case APP_EVENT_START:
+        case APP_EVENT_START: // 关闭事件
             s_current_state = APP_STATE_IDLE;
             printf("State: RUNNING -> IDLE\n");
             break;

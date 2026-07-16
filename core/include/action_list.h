@@ -6,11 +6,11 @@
 
 #define ACTION_LIST_MAX_SIZE 64 //最大动作数量、V1固定数组、后续可以改为动态扩展
 
-typedef struct macro_engine
+typedef struct macro_engine // 单项宏结构体
 {
     uint16_t key;       // 虚拟键值
     uint32_t delay_ms;  // 延迟时间
-} macro_action_t;
+} macro_action_t; 
 
 bool action_list_init(void);
 
