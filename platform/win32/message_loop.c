@@ -11,6 +11,7 @@
 
 #include "message_loop.h"
 #include "hotkey.h"
+#include "ui_capture.h"
 #include <stdio.h>
 #include <windows.h>
 
@@ -21,6 +22,9 @@ bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_HOTKEY:
         // printf("WM_HOTKEY received, id=%lld\n", wParam);
         return hotkey_process(wParam);
+    case WM_KEYDOWN:
+        if (ui_capture_is_active())
+            return ui_capture_process((uint16_t)wParam);
     default:
         return false; // V1.0: 暂时不处理任何事件，后续版本在此处添加Win32相关事件处理
     }

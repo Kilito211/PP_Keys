@@ -1,0 +1,11 @@
+"filename", "language", "C", "C++", "CMake", "comment", "blank", "total"
+"e:\Project\PP_Keys\app\app.c", "C", 4, 0, 0, 0, 3, 7
+"e:\Project\PP_Keys\platform\win32\message_loop.c", "C", 3, 0, 0, 0, 0, 3
+"e:\Project\PP_Keys\ui\CMakeLists.txt", "CMake", 0, 0, 1, 0, 0, 1
+"e:\Project\PP_Keys\ui\include\ui.h", "C++", 0, 6, 0, 0, 2, 8
+"e:\Project\PP_Keys\ui\include\ui_capture.h", "C++", 0, 18, 0, 0, 13, 31
+"e:\Project\PP_Keys\ui\include\ui_win32.h", "C++", 0, 3, 0, 0, 1, 4
+"e:\Project\PP_Keys\ui\ui.c", "C", 7, 0, 0, 14, 4, 25
+"e:\Project\PP_Keys\ui\ui_capture.c", "C", 51, 0, 0, 43, 13, 107
+"e:\Project\PP_Keys\ui\win32\ui_win32.c", "C", 15, 0, 0, 5, 1, 21
+"Total", "-", 80, 27, 1, 62, 37, 207

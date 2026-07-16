@@ -96,7 +96,9 @@ void hotkey_deinit(void)
  */
 bool hotkey_set(uint16_t key)
 {
+    hotkey_stop_listen();
     s_hotkey = key;
+    hotkey_start_listen(s_hWnd);
     return true;
 }
 
@@ -108,4 +110,26 @@ bool hotkey_set(uint16_t key)
 uint16_t hotkey_get(void)
 {
     return s_hotkey;
+}
+
+/**
+ * @brief 获取热键名称
+ * 
+ * @param vk 键值
+ * @param text 名称文本
+ * @param len 长度
+ * @return true 成功
+ * @return false 失败
+ */
+bool hotkey_get_name(uint16_t vk,wchar_t *text,uint32_t len)
+{
+    if(text == NULL || len == 0)
+        return false;
+
+    UINT scan = MapVirtualKey(vk, MAPVK_VK_TO_VSC);
+
+    LONG lParam = scan << 16;
+    if(GetKeyNameTextW(lParam,text,len) == 0)
+        swprintf(text, len, L"%u", vk);
+    return true;
 }

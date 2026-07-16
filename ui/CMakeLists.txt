@@ -1,5 +1,6 @@
 add_library(ppkeys_ui
     ui.c
+    ui_capture.c
     win32/ui_win32.c
 )
 

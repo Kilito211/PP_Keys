@@ -21,6 +21,7 @@
 
 #if DEBUG
 #include "keyboard.h"
+#include "ui_capture.h"
 #endif // DEBUG
 
 
@@ -101,6 +102,10 @@ bool app_init(void)
         macro_action_t *temp = action_list_get(i);
         printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
     }
+
+    // ui_capture_init();
+
+    // printf("%d\n", ui_capture_is_active());
 
     // macro_engine_start();
 
