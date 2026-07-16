@@ -10,6 +10,7 @@
  */
 
 #include "state_machine.h"
+#include "macro_engine.h"
 #include <stdio.h>
 
 static app_state_t s_current_state = APP_STATE_IDLE; // 静态状态值，初始化为空闲
@@ -41,6 +42,7 @@ void state_machine_handle_event(app_event_t event)
         {
         case APP_EVENT_START: // 开始事件
             s_current_state = APP_STATE_RUNNING;
+            macro_engine_start();
             printf("State: IDLE -> RUNNING\n");
             break;
         default:
@@ -52,6 +54,7 @@ void state_machine_handle_event(app_event_t event)
         {
         case APP_EVENT_START: // 关闭事件
             s_current_state = APP_STATE_IDLE;
+            macro_engine_stop();
             printf("State: RUNNING -> IDLE\n");
             break;
 
