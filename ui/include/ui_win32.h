@@ -16,4 +16,4 @@ void ui_win32_deinit(void);
 
 bool ui_win32_process_command(WPARAM wParam, LPARAM lParam);
 
-#endif //UI_WIN32_H
+#endif // UI_WIN32_H

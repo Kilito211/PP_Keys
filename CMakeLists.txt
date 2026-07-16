@@ -6,17 +6,24 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 if(MSVC)
-    # 消除C4819编码警告
     add_compile_options(/utf-8)
 endif()
 
-# 禁止CMake使用response file，MinGW对此特性支持有问题
 set(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 set(CMAKE_C_USE_RESPONSE_FILE_FOR_LIBRARIES OFF)
 set(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS OFF)
 
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/app/include
+    ${PROJECT_SOURCE_DIR}/core/include
+    ${PROJECT_SOURCE_DIR}/platform/win32/include
+    ${PROJECT_SOURCE_DIR}/ui/include
+)
+
 add_subdirectory(core)
 add_subdirectory(platform)
+add_subdirectory(ui)
 add_subdirectory(app)
 
 add_executable(PPKeys
@@ -26,4 +33,7 @@ add_executable(PPKeys
 target_link_libraries(PPKeys
     PRIVATE
         ppkeys_app
+        ppkeys_platform
+        ppkeys_core
+        ppkeys_ui
 )
