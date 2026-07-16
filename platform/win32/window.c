@@ -47,7 +47,7 @@ bool window_init(void)
     }
 
     // 创建窗口
-    s_hWnd = CreateWindowExW(0, s_window_class_name, s_window_title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, s_hInstance, NULL);
+    s_hWnd = CreateWindowExW(0, s_window_class_name, s_window_title, WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME), CW_USEDEFAULT, CW_USEDEFAULT, 430, 420, NULL, NULL, s_hInstance, NULL);
     if (!s_hWnd) // 创建窗口失败
         return false;
 

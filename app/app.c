@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2026
  *
  */
-#define DEBUG 1
+#define DEBUG 0
 
 #include "app.h"
 #include "app_event.h"
