@@ -59,8 +59,19 @@ bool app_init(void)
         return false;
     }
 
+    if (!hotkey_start_listen(window_get_handle()))
+    {
+        window_deinit();
+        hotkey_deinit();
+        state_machine_deinit();
+        action_list_deinit();
+        app_event_deinit();
+        return false;
+    }
+
     if (!macro_engine_init())
     {
+        hotkey_stop_listen();
         hotkey_deinit();
         window_deinit();
         state_machine_deinit();
@@ -109,6 +120,7 @@ void app_run(void)
 void app_deinit(void)
 {
     macro_engine_deinit();
+    hotkey_stop_listen();
     window_deinit();
     hotkey_deinit();
     state_machine_deinit();

@@ -24,7 +24,8 @@ static HWND s_hWnd = NULL;
  */
 bool hotkey_init(void)
 {
-    return hotkey_start_listen(window_get_handle());
+    // return hotkey_start_listen(window_get_handle());
+    return true;
 }
 
 /**
@@ -82,5 +83,5 @@ bool hotkey_process(unsigned int id)
  */
 void hotkey_deinit(void)
 {
-    hotkey_stop_listen();
+    // hotkey_stop_listen();
 }

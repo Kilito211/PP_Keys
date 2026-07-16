@@ -1,6 +1,7 @@
 add_library(ppkeys_platform
     window.c
     message_loop.c
+    ui_win32.c
 )
 
 target_include_directories(ppkeys_platform
