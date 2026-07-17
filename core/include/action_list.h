@@ -20,6 +20,8 @@ uint32_t action_list_get_count(void);
 
 const macro_action_t *action_list_get(uint32_t index);
 
+bool action_list_delete(uint32_t index);
+
 void action_list_clear(void);
 
 void action_list_deinit(void);

@@ -140,7 +140,8 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         return true;
     case IDC_BTN_ADD:
         macro_action_t action;
-
+        if (action_list_get_count() >= ACTION_MAX_UI)
+            return true;
         if (!ui_get_input_action(&action))
         {
             printf("Input Invalid\n");
@@ -158,7 +159,12 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
     default:
         if (id >= IDC_BTN_DELETE_BASE && id < IDC_BTN_DELETE_BASE + ACTION_MAX_UI)
         {
-            printf("Delete %d\n", id - IDC_BTN_DELETE_BASE);
+            uint32_t index = id - IDC_BTN_DELETE_BASE;
+            printf("Delete %lu\n", index);
+            if (action_list_delete(index))
+            {
+                ui_win32_refresh_action_list();
+            }
             return true;
         }
         return false;
@@ -236,8 +242,8 @@ bool ui_win32_refresh_action_list(void)
 
         s_action_items[i].key = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 20, y, 80, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL); // 创建键值格子
         swprintf(text, 64, L"%lu", action->delay_ms);
-        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);                                          // 创建delay格子
-        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2, 70, 22, s_table_frame, (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
+        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);                                                      // 创建delay格子
+        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2 + 150, 70, 22, window_get_handle(), (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
         if (!s_action_items[i].key || !s_action_items[i].delay || !s_action_items[i].delete_btn)
         {
             return false;
@@ -295,18 +301,17 @@ static void ui_reset_input(void)
 
 /**
  * @brief 显示内容
- * 
- * @param text 
+ *
+ * @param text
  */
 void ui_win32_set_action_key_text(const wchar_t *text)
 {
     SetWindowTextW(s_btn_input_key, text);
 }
 
-
 /**
  * @brief 获取键值并显示
- * 
+ *
  * @param vk 键值
  */
 void ui_win32_set_action_key(uint16_t vk)

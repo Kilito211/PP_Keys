@@ -16,7 +16,7 @@
 #define UI_INPUT_KEY_X 110   // 添加键值横坐标
 #define UI_INPUT_DELAY_X 260 // 添加DELAY横坐标
 
-#define UI_TABLE_Y 180   // 表格纵坐标
+#define UI_TABLE_Y 150   // 表格纵坐标
 #define UI_ROW_HEIGHT 25 // 行高
 
 typedef enum
