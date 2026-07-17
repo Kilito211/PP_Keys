@@ -15,6 +15,7 @@
 #include "hotkey.h"
 #include "action_list.h"
 #include "window.h"
+#include "state_machine.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -123,6 +124,10 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
 {
     uint16_t id = LOWORD(wParam);
     uint16_t notify = HIWORD(wParam);
+
+    if (state_machine_get_state())
+        return true;
+        
     switch (id)
     {
     case IDC_BTN_START:

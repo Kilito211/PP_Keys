@@ -20,12 +20,42 @@ bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_HOTKEY:
-        // printf("WM_HOTKEY received, id=%lld\n", wParam);
         return hotkey_process(wParam);
     case WM_KEYDOWN:
+        uint16_t vk = (uint16_t)wParam;
+
         if (ui_capture_is_active())
-            return ui_capture_process((uint16_t)wParam);
+        {
+            if (vk == VK_PROCESSKEY)
+            {
+                BYTE key_state[256];
+                if (GetKeyboardState(key_state))
+                {
+                    for (int i = 0x41; i <= 0x5A; i++)
+                    {
+                        if (key_state[i] & 0x80)
+                        {
+                            return ui_capture_process((uint16_t)i);
+                        }
+                    }
+                    for (int i = 0x30; i <= 0x39; i++)
+                    {
+                        if (key_state[i] & 0x80)
+                        {
+                            return ui_capture_process((uint16_t)i);
+                        }
+                    }
+                }
+                return false;
+            }
+
+            if (vk > 0 && vk <= 0xFE)
+            {
+                return ui_capture_process(vk);
+            }
+        }
+        break;
     default:
-        return false; // V1.0: 暂时不处理任何事件，后续版本在此处添加Win32相关事件处理
+        return false;
     }
 }

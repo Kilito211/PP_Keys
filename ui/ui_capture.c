@@ -96,6 +96,9 @@ bool ui_capture_process(uint16_t vk)
 {
     wchar_t text[64];
 
+    if (vk == 0 || vk > 0xFE)
+        return false;
+
     if (!ui_capture_is_active())
         return false;
 
