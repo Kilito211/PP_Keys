@@ -20,6 +20,13 @@ bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_HOTKEY:
+        if (ui_capture_is_active())
+        {
+            if (ui_capture_get_mode() == UI_CAPTURE_HOTKEY)
+            {
+                return ui_capture_process((uint16_t)hotkey_get());
+            }
+        }
         return hotkey_process(wParam);
     case WM_KEYDOWN:
         uint16_t vk = (uint16_t)wParam;
