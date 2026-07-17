@@ -125,9 +125,9 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
     uint16_t id = LOWORD(wParam);
     uint16_t notify = HIWORD(wParam);
 
-    if (state_machine_get_state())
+    if (state_machine_get_state() && id != IDC_BTN_START)
         return true;
-        
+
     switch (id)
     {
     case IDC_BTN_START:
