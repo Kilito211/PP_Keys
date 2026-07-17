@@ -20,7 +20,7 @@
 #include <stdint.h>
 
 #define DEBUG 1
-#define ACTION_MAX_UI 60
+#define ACTION_MAX_UI 6
 
 static HWND s_btn_start = NULL;
 static HWND s_btn_hotkey = NULL;
@@ -44,7 +44,7 @@ static ui_action_item_t s_action_items[ACTION_MAX_UI];
 bool ui_win32_init(HWND parent)
 {
     // 创建启停按键
-    s_btn_start = CreateWindowExW(0, L"BUTTON", L"Start/Stop", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 150, 320, 110, 32, parent, (HMENU)IDC_BTN_START, GetModuleHandleW(NULL), NULL);
+    s_btn_start = CreateWindowExW(0, L"BUTTON", L"Start/Stop", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 150, 350, 110, 32, parent, (HMENU)IDC_BTN_START, GetModuleHandleW(NULL), NULL);
     if (s_btn_start == NULL)
         return false;
 
@@ -64,32 +64,32 @@ bool ui_win32_init(HWND parent)
         return false;
 
     // Add按钮
-    s_btn_add = CreateWindowExW(0, L"BUTTON", L"Add", WS_CHILD | WS_VISIBLE, 20, 110, 60, 28, parent, (HMENU)IDC_BTN_ADD, GetModuleHandleW(NULL), NULL);
+    s_btn_add = CreateWindowExW(0, L"BUTTON", L"Add", WS_CHILD | WS_VISIBLE, 20, 100, 60, 28, parent, (HMENU)IDC_BTN_ADD, GetModuleHandleW(NULL), NULL);
     if (s_btn_add == NULL)
         return false;
 
     // 添加动作按键的提示文本
-    s_label_input_key = CreateWindowExW(0, L"STATIC", L"Key", WS_CHILD | WS_VISIBLE, 100, 115, 40, 20, parent, NULL, GetModuleHandleW(NULL), NULL);
+    s_label_input_key = CreateWindowExW(0, L"STATIC", L"Key", WS_CHILD | WS_VISIBLE, 95, 105, 40, 20, parent, NULL, GetModuleHandleW(NULL), NULL);
     if (s_label_input_key == NULL)
         return false;
 
     // 添加动作案件的Edit
-    s_edit_input_key = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER, 140, 110, 70, 25, parent, (HMENU)IDC_EDIT_ACTION_KEY, GetModuleHandleW(NULL), NULL);
+    s_edit_input_key = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER, 145, 100, 70, 25, parent, (HMENU)IDC_EDIT_ACTION_KEY, GetModuleHandleW(NULL), NULL);
     if (s_edit_input_key == NULL)
         return false;
 
     // 添加delay的提示文本
-    s_label_input_delay = CreateWindowExW(0, L"STATIC", L"Delay", WS_CHILD | WS_VISIBLE, 220, 115, 50, 20, parent, NULL, GetModuleHandleW(NULL), NULL);
+    s_label_input_delay = CreateWindowExW(0, L"STATIC", L"Delay", WS_CHILD | WS_VISIBLE, 225, 105, 50, 20, parent, NULL, GetModuleHandleW(NULL), NULL);
     if (s_label_input_delay == NULL)
         return false;
 
     // 添加delay的edit
-    s_edit_input_delay = CreateWindowExW(0, L"EDIT", L"100", WS_CHILD | WS_VISIBLE | WS_BORDER, 270, 110, 70, 25, parent, (HMENU)IDC_EDIT_ACTION_DELAY, GetModuleHandleW(NULL), NULL);
+    s_edit_input_delay = CreateWindowExW(0, L"EDIT", L"100", WS_CHILD | WS_VISIBLE | WS_BORDER, 275, 100, 70, 25, parent, (HMENU)IDC_EDIT_ACTION_DELAY, GetModuleHandleW(NULL), NULL);
     if (s_edit_input_delay == NULL)
         return false;
 
     // 表格
-    s_table_frame = CreateWindowExW(0, L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_BORDER, 20, 180, 390, 180, parent, NULL, GetModuleHandleW(NULL), NULL);
+    s_table_frame = CreateWindowExW(0, L"STATIC", L"", WS_CHILD | WS_VISIBLE | WS_BORDER, 20, 150, 390, 185, parent, NULL, GetModuleHandleW(NULL), NULL);
     if (s_table_frame == NULL)
         return false;
 
@@ -101,15 +101,6 @@ bool ui_win32_init(HWND parent)
     s_label_delay = CreateWindowExW(0, L"STATIC", L"Delay(ms)", WS_CHILD | WS_VISIBLE, 120, 5, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);
     if (s_label_delay == NULL)
         return false;
-
-#if DEBUG
-    macro_action_t action =
-        {
-            .key = VK_F4,
-            .delay_ms = 100};
-
-    action_list_add(&action);
-#endif
 
     ui_win32_refresh_action_list();
     return true;
@@ -127,7 +118,6 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
 {
     uint16_t id = LOWORD(wParam);
     uint16_t notify = HIWORD(wParam);
-    printf("UI_WIN32: id:%d\n",id);
     switch (id)
     {
     case IDC_BTN_START:
@@ -139,6 +129,15 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         return true;
     case IDC_BTN_ADD:
         printf("Add Action\n");
+#if DEBUG
+        macro_action_t action =
+            {
+                .key = VK_F4,
+                .delay_ms = 100};
+
+        action_list_add(&action);
+        ui_win32_refresh_action_list();
+#endif
         return true;
     default:
         if (id >= IDC_BTN_DELETE_BASE && id < IDC_BTN_DELETE_BASE + ACTION_MAX_UI)
@@ -215,14 +214,14 @@ bool ui_win32_refresh_action_list(void)
 
         s_action_items[i].data = *action; // 将数据从执行数据保存到显示静态数据
 
-        int y = 35 + i * UI_ROW_HEIGHT;
+        int y = 30 + i * UI_ROW_HEIGHT;
 
         hotkey_get_name(action->key, text, sizeof(text) / sizeof(text[0])); // 获取名字
 
         s_action_items[i].key = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 20, y, 80, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL); // 创建键值格子
         swprintf(text, 64, L"%lu", action->delay_ms);
-        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);                                          // 创建delay格子
-        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2 + 180, 70, 22, window_get_handle(), (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
+        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);  // 创建delay格子
+        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2 + 150, 70, 22, window_get_handle(), (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
         if (!s_action_items[i].key || !s_action_items[i].delay || !s_action_items[i].delete_btn)
         {
             return false;
