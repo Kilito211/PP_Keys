@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define ACTION_MAX_UI 6
 
 static HWND s_btn_start = NULL;
@@ -28,11 +28,15 @@ static HWND s_btn_add = NULL;
 static HWND s_label_key = NULL;
 static HWND s_label_delay = NULL;
 static HWND s_label_input_key;
-static HWND s_edit_input_key;
+static HWND s_btn_input_key;
 static HWND s_label_input_delay;
 static HWND s_edit_input_delay;
 static HWND s_table_frame;
+static uint16_t s_input_action_key = VK_F9;
 static ui_action_item_t s_action_items[ACTION_MAX_UI];
+
+static bool ui_get_input_action(macro_action_t *action);
+static void ui_reset_input(void);
 
 /**
  * @brief 初始化UI
@@ -74,8 +78,9 @@ bool ui_win32_init(HWND parent)
         return false;
 
     // 添加动作案件的Edit
-    s_edit_input_key = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER, 145, 100, 70, 25, parent, (HMENU)IDC_EDIT_ACTION_KEY, GetModuleHandleW(NULL), NULL);
-    if (s_edit_input_key == NULL)
+    hotkey_get_name(s_input_action_key, text, 32);
+    s_btn_input_key = CreateWindowExW(0, L"BUTTON", text, WS_CHILD | WS_VISIBLE | WS_BORDER, 145, 100, 70, 25, parent, (HMENU)IDC_BTN_ACTION_KEY, GetModuleHandleW(NULL), NULL);
+    if (s_btn_input_key == NULL)
         return false;
 
     // 添加delay的提示文本
@@ -127,17 +132,28 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         if (notify == BN_CLICKED)
             ui_capture_begin(UI_CAPTURE_HOTKEY);
         return true;
+    case IDC_BTN_ACTION_KEY:
+        if (notify == BN_CLICKED)
+        {
+            ui_capture_begin(UI_CAPTURE_ACTION_KEY);
+        }
+        return true;
     case IDC_BTN_ADD:
-        printf("Add Action\n");
-#if DEBUG
-        macro_action_t action =
-            {
-                .key = VK_F4,
-                .delay_ms = 100};
+        macro_action_t action;
 
-        action_list_add(&action);
+        if (!ui_get_input_action(&action))
+        {
+            printf("Input Invalid\n");
+            return true;
+        }
+
+        if (!action_list_add(&action))
+        {
+            printf("Action List Full\n");
+            return true;
+        }
         ui_win32_refresh_action_list();
-#endif
+        ui_reset_input();
         return true;
     default:
         if (id >= IDC_BTN_DELETE_BASE && id < IDC_BTN_DELETE_BASE + ACTION_MAX_UI)
@@ -220,12 +236,86 @@ bool ui_win32_refresh_action_list(void)
 
         s_action_items[i].key = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 20, y, 80, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL); // 创建键值格子
         swprintf(text, 64, L"%lu", action->delay_ms);
-        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);  // 创建delay格子
-        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2 + 150, 70, 22, window_get_handle(), (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
+        s_action_items[i].delay = CreateWindowExW(0, L"STATIC", text, WS_CHILD | WS_VISIBLE, 120, y, 100, 20, s_table_frame, NULL, GetModuleHandleW(NULL), NULL);                                          // 创建delay格子
+        s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2, 70, 22, s_table_frame, (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
         if (!s_action_items[i].key || !s_action_items[i].delay || !s_action_items[i].delete_btn)
         {
             return false;
         }
     }
     return true;
+}
+
+/**
+ * @brief 从两个Edit中读取内容并转化为macro_action_t
+ *
+ * @param action action数据结构体
+ * @return true 成功
+ * @return false 失败
+ */
+static bool ui_get_input_action(macro_action_t *action)
+{
+    // wchar_t key_text[32];
+    wchar_t delay_text[32];
+
+    if (action == NULL)
+        return false;
+
+    // GetWindowTextW(s_btn_input_key, key_text, sizeof(key_text) / sizeof(key_text[0]));          // 获取键值文本
+    GetWindowTextW(s_edit_input_delay, delay_text, sizeof(delay_text) / sizeof(delay_text[0])); // 获取delay文本
+
+    // if (key_text[0] == L'\0')
+    //     return false;
+
+    // SHORT vk = VkKeyScanW(key_text[0]);
+    // if (vk == -1)
+    //     return false;
+
+    // action->key = LOBYTE(vk);
+    action->key = s_input_action_key;
+    action->delay_ms = _wtoi(delay_text);
+    if (action->delay_ms == 0)
+        return false;
+
+    printf("UI_WIN32: key:%d delay:%lu\n", action->key, (unsigned long)action->delay_ms);
+    return true;
+}
+
+/**
+ * @brief Add成功后恢复Exid默认值
+ *
+ */
+static void ui_reset_input(void)
+{
+    // SetWindowTextW(s_btn_input_key, L"");
+    SetWindowTextW(s_edit_input_delay, L"100");
+
+    SetFocus(s_btn_input_key);
+}
+
+/**
+ * @brief 显示内容
+ * 
+ * @param text 
+ */
+void ui_win32_set_action_key_text(const wchar_t *text)
+{
+    SetWindowTextW(s_btn_input_key, text);
+}
+
+
+/**
+ * @brief 获取键值并显示
+ * 
+ * @param vk 键值
+ */
+void ui_win32_set_action_key(uint16_t vk)
+{
+    wchar_t text[32];
+
+    s_input_action_key = vk;
+
+    hotkey_get_name(vk, text, 32);
+
+    ui_win32_set_action_key_text(text);
 }

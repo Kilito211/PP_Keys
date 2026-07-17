@@ -1,0 +1,8 @@
+"filename", "language", "C", "C++", "comment", "blank", "total"
+"e:\Project\PP_Keys\app\app.c", "C", -3, 0, 2, -1, -2
+"e:\Project\PP_Keys\core\hotkey.c", "C", 12, 0, 9, 3, 24
+"e:\Project\PP_Keys\core\include\hotkey.h", "C++", 0, 1, 0, 1, 2
+"e:\Project\PP_Keys\platform\win32\message_loop.c", "C", 1, 0, 0, 0, 1
+"e:\Project\PP_Keys\ui\include\ui_win32.h", "C++", 0, 20, 0, 9, 29
+"e:\Project\PP_Keys\ui\win32\ui_win32.c", "C", 139, 0, 30, 32, 201
+"Total", "-", 149, 21, 41, 44, 255

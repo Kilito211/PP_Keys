@@ -24,7 +24,7 @@ typedef enum
     IDC_BTN_START = 1001,
     IDC_BTN_CHANGE_HOTKEY,
     IDC_BTN_ADD,
-    IDC_EDIT_ACTION_KEY,
+    IDC_BTN_ACTION_KEY,
     IDC_EDIT_ACTION_DELAY,
     IDC_BTN_DELETE_BASE = 2000,
     IDC_COUNT,
@@ -48,5 +48,9 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam);
 void ui_win32_set_hotkey_text(const wchar_t *text);
 
 bool ui_win32_refresh_action_list(void);
+
+void ui_win32_set_action_key_text(const wchar_t *text);
+
+void ui_win32_set_action_key(uint16_t vk);
 
 #endif // UI_WIN32_H
