@@ -12,11 +12,15 @@
 #include "message_loop.h"
 #include "hotkey.h"
 #include "ui_capture.h"
+#include "tray.h"
 #include <stdio.h>
 #include <windows.h>
 
 bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    if (tray_process_message(hwnd, msg, wParam, lParam))
+        return true;
+
     switch (msg)
     {
     case WM_HOTKEY:

@@ -17,6 +17,7 @@
 #include "state_machine.h"
 #include "action_list.h"
 #include "macro_engine.h"
+#include "tray.h"
 #include <stdio.h>
 
 #if DEBUG
@@ -60,7 +61,7 @@ bool app_init(void)
         return false;
     }
 
-    if (!hotkey_start_listen(window_get_handle()))
+    if (!tray_init(window_get_handle()))
     {
         window_deinit();
         hotkey_deinit();
@@ -70,10 +71,22 @@ bool app_init(void)
         return false;
     }
 
+        if (!hotkey_start_listen(window_get_handle()))
+        {
+            tray_remove();
+            window_deinit();
+            hotkey_deinit();
+            state_machine_deinit();
+            action_list_deinit();
+            app_event_deinit();
+            return false;
+        }
+
     if (!macro_engine_init())
     {
         hotkey_stop_listen();
         hotkey_deinit();
+        tray_remove();
         window_deinit();
         state_machine_deinit();
         action_list_deinit();
@@ -126,6 +139,7 @@ void app_deinit(void)
 {
     macro_engine_deinit();
     hotkey_stop_listen();
+    tray_remove();
     window_deinit();
     hotkey_deinit();
     state_machine_deinit();

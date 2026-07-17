@@ -12,10 +12,12 @@
 #include "window.h"
 #include "ui_win32.h"
 #include "message_loop.h"
+#include "tray.h"
 #include <windows.h>
 
 static HINSTANCE s_hInstance = NULL; // 全局实例句柄
 static HWND s_hWnd = NULL;           // 全局窗口句柄
+static bool s_hide_to_tray = true;   // 是否隐藏了窗口
 
 static const wchar_t *s_window_class_name = L"PPKeysWindowClass";  // 窗口类名
 static const wchar_t *s_window_title = L"PPKeys";                  // 窗口标题
@@ -91,6 +93,7 @@ void window_run(void)
 void window_deinit(void)
 {
     ui_win32_deinit();
+    tray_remove();
 }
 
 /**
@@ -112,7 +115,19 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 
     switch (msg)
     {
+    case WM_CLOSE:
+        if (s_hide_to_tray)
+        {
+            ShowWindow(
+                hwnd,
+                SW_HIDE);
+
+            return 0;
+        }
+        DestroyWindow(hwnd);
+        return 0;
     case WM_DESTROY:        // 窗口销毁事件
+        tray_remove();      // 销毁托盘
         PostQuitMessage(0); // 发送退出消息
         return 0;
 #if DEBUG
