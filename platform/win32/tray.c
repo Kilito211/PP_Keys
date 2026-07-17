@@ -12,6 +12,7 @@
 #include "tray.h"
 #include <windows.h>
 #include <shellapi.h>
+#include "resource.h"
 
 static NOTIFYICONDATAW s_notify = {0};
 
@@ -34,8 +35,8 @@ bool tray_init(HWND hwnd)
 
     s_notify.uCallbackMessage = WM_TRAY_NOTIFY;
 
-    // s_notify.hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(101));
-    s_notify.hIcon = LoadIconW(NULL, (LPCWSTR)IDI_APPLICATION);
+    s_notify.hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_ICON1));
+    // s_notify.hIcon = LoadIconW(NULL, (LPCWSTR)IDI_APPLICATION);
 
     wcscpy_s(s_notify.szTip, 128, L"PPKeys");
 

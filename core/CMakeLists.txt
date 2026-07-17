@@ -4,4 +4,5 @@ add_library(ppkeys_core
     action_list.c
     macro_engine.c
     state_machine.c
+    single_instance.c
 )

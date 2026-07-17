@@ -10,9 +10,15 @@
  */
 
 #include "app.h"
+#include "single_instance.h"
 
 int main(void)
 {
+    if (!single_instance_check())
+    {
+        return 0;
+    }
+
     if (!app_init())
     {
         return -1;

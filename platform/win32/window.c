@@ -15,6 +15,9 @@
 #include "tray.h"
 #include <windows.h>
 
+#define IDI_ICON1 101
+#define WM_SHOW_WINDOW (WM_USER + 10)
+
 static HINSTANCE s_hInstance = NULL; // 全局实例句柄
 static HWND s_hWnd = NULL;           // 全局窗口句柄
 static bool s_hide_to_tray = true;   // 是否隐藏了窗口
@@ -41,6 +44,8 @@ bool window_init(void)
         .lpfnWndProc = window_proc,           // 窗口事件处理函数句柄
         .hInstance = s_hInstance,             // 当前程序句柄
         .lpszClassName = s_window_class_name, // 窗口类名
+        .hIcon = LoadIconW(s_hInstance, MAKEINTRESOURCEW(IDI_ICON1)),
+        .hIconSm = LoadIconW(s_hInstance, MAKEINTRESOURCEW(IDI_ICON1)),
     };
 
     if (!RegisterClassExW(&window_class)) // 注册窗口类
@@ -129,6 +134,10 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
     case WM_DESTROY:        // 窗口销毁事件
         tray_remove();      // 销毁托盘
         PostQuitMessage(0); // 发送退出消息
+        return 0;
+    case WM_SHOW_WINDOW:
+        ShowWindow(hwnd, SW_SHOW);
+        SetForegroundWindow(hwnd);
         return 0;
 #if DEBUG
     case WM_PAINT:
