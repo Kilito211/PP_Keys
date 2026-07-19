@@ -11,7 +11,7 @@
 
 bool tray_init(HWND hwnd);
 
-static void tray_show_menu(HWND hwnd);
+
 
 bool tray_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

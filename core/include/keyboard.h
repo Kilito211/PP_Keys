@@ -7,7 +7,7 @@
 
 bool keyboard_init(void);
 
-static bool keyboard_send(uint16_t key, DWORD flags);
+bool keyboard_send(uint16_t key, DWORD flags);
 
 bool keyboard_key_down(uint16_t key);
 

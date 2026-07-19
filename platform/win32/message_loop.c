@@ -33,6 +33,7 @@ bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         return hotkey_process(wParam);
     case WM_KEYDOWN:
+    {
         uint16_t vk = (uint16_t)wParam;
 
         if (ui_capture_is_active())
@@ -66,7 +67,9 @@ bool message_loop_dispatch(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    }
     default:
         return false;
     }
+    return false;
 }

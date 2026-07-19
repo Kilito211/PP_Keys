@@ -69,7 +69,7 @@ void macro_engine_stop(void)
 
     if(s_thread)
     {
-        WaitForSingleObject(s_thread, INFINITE); // 暂停线程
+        WaitForSingleObject(s_thread, INFINITE); // 等待线程退出
         CloseHandle(s_thread); // 关闭线程
         s_thread = NULL; // 重置指针
     }

@@ -31,7 +31,7 @@ bool keyboard_init(void)
  * @return true 成功
  * @return false 失败
  */
-static bool keyboard_send(uint16_t key, DWORD flags)
+bool keyboard_send(uint16_t key, DWORD flags)
 {
     INPUT input = {0};
     input.type = INPUT_KEYBOARD;

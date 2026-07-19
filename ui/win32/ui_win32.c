@@ -144,6 +144,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         }
         return true;
     case IDC_BTN_ADD:
+    {
         macro_action_t action;
         if (action_list_get_count() >= ACTION_MAX_UI)
             return true;
@@ -161,6 +162,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         ui_win32_refresh_action_list();
         ui_reset_input();
         return true;
+    }
     default:
         if (id >= IDC_BTN_DELETE_BASE && id < IDC_BTN_DELETE_BASE + ACTION_MAX_UI)
         {
