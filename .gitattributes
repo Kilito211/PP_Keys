@@ -1,0 +1,23 @@
+﻿# Auto-detect UTF-8 encoding for all source files
+*.c     text encoding=UTF-8
+*.h     text encoding=UTF-8
+*.md    text encoding=UTF-8
+*.txt   text encoding=UTF-8
+*.rc    text encoding=UTF-8
+CMakeLists.txt text encoding=UTF-8
+*.cmake text encoding=UTF-8
+*.json  text encoding=UTF-8
+# Normalize line endings to LF for consistency
+*.c     eol=lf
+*.h     eol=lf
+*.md    eol=lf
+*.txt   eol=lf
+*.rc    eol=lf
+CMakeLists.txt eol=lf
+*.cmake eol=lf
+*.json  eol=lf
+# Binary files should not be modified
+*.ico   binary
+*.png   binary
+*.exe   binary
+*.dll   binary

@@ -53,4 +53,6 @@ void ui_win32_set_action_key_text(const wchar_t *text);
 
 void ui_win32_set_action_key(uint16_t vk);
 
+void ui_win32_update_state(void);
+
 #endif // UI_WIN32_H

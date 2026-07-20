@@ -52,6 +52,7 @@ bool ui_win32_init(HWND parent)
     s_btn_start = CreateWindowExW(0, L"BUTTON", L"Start/Stop", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 150, 350, 110, 32, parent, (HMENU)IDC_BTN_START, GetModuleHandleW(NULL), NULL);
     if (s_btn_start == NULL)
         return false;
+    ui_win32_update_state(); // 更新start按键状态
 
     // 创建热键文本
     if (!CreateWindowExW(0, L"STATIC", L"Hotkey", WS_CHILD | WS_VISIBLE, 20, 24, 60, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
@@ -330,4 +331,26 @@ void ui_win32_set_action_key(uint16_t vk)
     hotkey_get_name(vk, text, 32);
 
     ui_win32_set_action_key_text(text);
+}
+
+/**
+ * @brief 根据APP_STATE更新启停按键文本
+ * 
+ */
+void ui_win32_update_state(void)
+{
+    if (s_btn_start == NULL)
+        return;
+
+    switch (state_machine_get_state())
+    {
+    case APP_STATE_IDLE:
+        SetWindowTextW(s_btn_start, L"Start");
+        break;
+    case APP_STATE_RUNNING:
+        SetWindowTextW(s_btn_start, L"Stop");
+        break;
+    default:
+        break;
+    }
 }

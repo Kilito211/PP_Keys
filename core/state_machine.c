@@ -11,6 +11,7 @@
 
 #include "state_machine.h"
 #include "macro_engine.h"
+#include "ui_win32.h"
 #include <stdio.h>
 
 static app_state_t s_current_state = APP_STATE_IDLE; // 静态状态值，初始化为空闲
@@ -66,6 +67,7 @@ void state_machine_handle_event(app_event_t event)
         s_current_state = APP_STATE_IDLE;
         break;
     }
+    ui_win32_update_state(); // 更新启停键状态
 }
 
 /**
