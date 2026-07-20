@@ -19,6 +19,7 @@
 #include "macro_engine.h"
 #include "tray.h"
 #include "voice.h"
+#include "status_overlay.h"
 #include <stdio.h>
 
 #if DEBUG
@@ -32,7 +33,7 @@ bool app_init(void)
 
     if (FAILED(hr))
     {
-        printf("COM init failed: 0x%08lX\n", hr);
+        printf("COM init failed: 0x%08lX\\n", hr);
         return false;
     }
 
@@ -126,6 +127,24 @@ bool app_init(void)
         return false;
     }
 
+    if (!status_overlay_init())
+    {
+        macro_engine_deinit();
+        hotkey_stop_listen();
+        hotkey_deinit();
+        tray_remove();
+        window_deinit();
+        state_machine_deinit();
+        action_list_deinit();
+        app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
+        return false;
+    }
+
+    // 初始显示悬浮窗
+    status_overlay_show(L"待机中");
+
 #if DEBUG
     macro_action_t action =
         {
@@ -141,34 +160,27 @@ bool app_init(void)
     action_list_add(&action);
     action_list_add(&action_1);
     uint32_t action_count = action_list_get_count();
-    printf("APP: Action count=%lu\n", action_count);
+    printf("APP: Action count=%lu\\n", action_count);
     for (int i = 0; i < action_count; i++)
     {
         macro_action_t *temp = action_list_get(i);
-        printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
+        printf("APP: Action%d -> Key:%d Delay_ms:%d\\n", i, temp->key, temp->delay_ms);
     }
-
-    // ui_capture_init();
-
-    // printf("%d\n", ui_capture_is_active());
-
-    // macro_engine_start();
-
 #endif // DEBUG
 
-    printf("APP Init Success\n");
+    printf("APP Init Success\\n");
     return true;
 }
 
 void app_run(void)
 {
     window_show();
-
     window_run();
 }
 
 void app_deinit(void)
 {
+    status_overlay_deinit();
     macro_engine_deinit();
     hotkey_stop_listen();
     tray_remove();

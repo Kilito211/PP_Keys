@@ -13,6 +13,7 @@
 #include "macro_engine.h"
 #include "ui_win32.h"
 #include "voice.h"
+#include "status_overlay.h"
 #include <stdio.h>
 
 static app_state_t s_current_state = APP_STATE_IDLE; // 静态状态值，初始化为空闲
@@ -71,6 +72,7 @@ void state_machine_handle_event(app_event_t event)
         break;
     }
     ui_win32_update_state(); // 更新启停键状态
+    status_overlay_set_running(s_current_state == APP_STATE_RUNNING);
 }
 
 /**

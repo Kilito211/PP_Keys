@@ -42,11 +42,11 @@ void ui_capture_begin(ui_capture_mode_t mode)
     switch (mode)
     {
     case UI_CAPTURE_HOTKEY:
-        ui_set_hotkey_text(L"Press any key");
+        ui_set_hotkey_text(L"Press key");
         break;
 
     case UI_CAPTURE_ACTION_KEY:
-        ui_win32_set_action_key_text(L"Press any key");
+        ui_win32_set_action_key_text(L"Press key");
         break;
 
     default:
