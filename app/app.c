@@ -18,6 +18,7 @@
 #include "action_list.h"
 #include "macro_engine.h"
 #include "tray.h"
+#include "voice.h"
 #include <stdio.h>
 
 #if DEBUG
@@ -25,15 +26,34 @@
 #include "ui_capture.h"
 #endif // DEBUG
 
-
 bool app_init(void)
 {
-    if (!app_event_init())
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+    if (FAILED(hr))
+    {
+        printf("COM init failed: 0x%08lX\n", hr);
         return false;
+    }
+
+    if (!voice_init())
+    {
+        CoUninitialize();
+        return false;
+    }
+
+    if (!app_event_init())
+    {
+        voice_deinit();
+        CoUninitialize();
+        return false;
+    }
 
     if (!action_list_init())
     {
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
@@ -41,6 +61,8 @@ bool app_init(void)
     {
         action_list_deinit();
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
@@ -49,6 +71,8 @@ bool app_init(void)
         state_machine_deinit();
         action_list_deinit();
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
@@ -58,6 +82,8 @@ bool app_init(void)
         state_machine_deinit();
         action_list_deinit();
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
@@ -68,19 +94,23 @@ bool app_init(void)
         state_machine_deinit();
         action_list_deinit();
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
-        if (!hotkey_start_listen(window_get_handle()))
-        {
-            tray_remove();
-            window_deinit();
-            hotkey_deinit();
-            state_machine_deinit();
-            action_list_deinit();
-            app_event_deinit();
-            return false;
-        }
+    if (!hotkey_start_listen(window_get_handle()))
+    {
+        tray_remove();
+        window_deinit();
+        hotkey_deinit();
+        state_machine_deinit();
+        action_list_deinit();
+        app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
+        return false;
+    }
 
     if (!macro_engine_init())
     {
@@ -91,6 +121,8 @@ bool app_init(void)
         state_machine_deinit();
         action_list_deinit();
         app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
         return false;
     }
 
@@ -124,7 +156,7 @@ bool app_init(void)
 
 #endif // DEBUG
 
-        printf("APP Init Success\n");
+    printf("APP Init Success\n");
     return true;
 }
 
@@ -145,4 +177,6 @@ void app_deinit(void)
     state_machine_deinit();
     action_list_deinit();
     app_event_deinit();
+    voice_deinit();
+    CoUninitialize();
 }
