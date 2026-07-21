@@ -14,6 +14,7 @@
 #include "message_loop.h"
 #include "tray.h"
 #include <windows.h>
+#include <windowsx.h>  // GET_X_LPARAM / GET_Y_LPARAM
 
 #define IDI_ICON1 101
 #define WM_SHOW_WINDOW (WM_USER + 10)
@@ -139,6 +140,20 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
         ShowWindow(hwnd, SW_SHOW);
         SetForegroundWindow(hwnd);
         return 0;
+    case WM_CTLCOLORSTATIC:
+    {
+        HWND hCtl = (HWND)lParam;
+        HDC hdcStatic = (HDC)wParam;
+        // 表格框架使用实色画刷，确保销毁子控件后背景能正确重绘
+        if (hCtl == ui_win32_get_table_frame())
+        {
+            SetBkMode(hdcStatic, OPAQUE);
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
+        }
+        SetBkMode(hdcStatic, TRANSPARENT);
+        return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+    }
 #if DEBUG
     case WM_PAINT:
     {
@@ -162,6 +177,20 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
         return 0;
     }
 #endif
+    case WM_MOUSEWHEEL:
+    {
+        // 将 WM_MOUSEWHEEL 转发给鼠标下方的子控件
+        POINT pt;
+        pt.x = GET_X_LPARAM(lParam);
+        pt.y = GET_Y_LPARAM(lParam);
+        HWND hTarget = WindowFromPoint(pt);
+        if (hTarget && hTarget != hwnd)
+        {
+            SendMessageW(hTarget, msg, wParam, lParam);
+            return 0;
+        }
+        break;
+    }
     case WM_COMMAND:
         if (ui_win32_process_command(wParam, lParam))
             return 0;

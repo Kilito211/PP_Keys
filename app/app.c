@@ -30,20 +30,23 @@
 
 bool app_init(void)
 {
+
     HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     if (FAILED(hr))
     {
-        printf("COM init failed: 0x%08lX\n", hr);
+        printf("COM init failed: 0x%08lX\\n", hr);
         return false;
     }
 
+    printf("APP: voice_init...\n");
     if (!voice_init())
     {
         CoUninitialize();
         return false;
     }
 
+    printf("APP: app_event_init...\n");
     if (!app_event_init())
     {
         voice_deinit();
@@ -51,6 +54,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: action_list_init...\n");
     if (!action_list_init())
     {
         app_event_deinit();
@@ -59,6 +63,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: state_machine_init...\n");
     if (!state_machine_init())
     {
         action_list_deinit();
@@ -68,6 +73,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: hotkey_init...\n");
     if (!hotkey_init())
     {
         state_machine_deinit();
@@ -78,6 +84,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: config_init...\n");
     if (!config_init())
     {
         hotkey_deinit();
@@ -89,6 +96,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: window_init...\n");
     if (!window_init())
     {
         config_deinit();
@@ -101,6 +109,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("APP: tray_init...\n");
     if (!tray_init(window_get_handle()))
     {
         window_deinit();
@@ -114,6 +123,7 @@ bool app_init(void)
         return false;
     }
 
+    printf("DBG: hotkey_start_listen...\n");
     if (!hotkey_start_listen(window_get_handle()))
     {
         tray_remove();
@@ -127,6 +137,7 @@ bool app_init(void)
         CoUninitialize();
         return false;
     }
+    printf("DBG: hotkey_start_listen OK\n"); fflush(stdout);
 
     if (!macro_engine_init())
     {
@@ -142,9 +153,11 @@ bool app_init(void)
         CoUninitialize();
         return false;
     }
+    printf("DBG: macro_engine_init OK\n"); fflush(stdout);
 
     if (!status_overlay_init())
     {
+        printf("DBG: status_overlay_init FAILED, gle=%lu\n", GetLastError());
         macro_engine_deinit();
         config_deinit();
         hotkey_stop_listen();
@@ -177,15 +190,15 @@ bool app_init(void)
     action_list_add(&action);
     action_list_add(&action_1);
     uint32_t action_count = action_list_get_count();
-    printf("APP: Action count=%lu\n", action_count);
+    printf("APP: Action count=%lu\\n", action_count);
     for (int i = 0; i < action_count; i++)
     {
         macro_action_t *temp = action_list_get(i);
-        printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
+        printf("APP: Action%d -> Key:%d Delay_ms:%d\\n", i, temp->key, temp->delay_ms);
     }
 #endif // DEBUG
 
-    printf("APP Init Success\n");
+    printf("APP Init Success\\n");
     return true;
 }
 

@@ -46,3 +46,4 @@ void ui_win32_set_action_key(uint16_t vk);
 void ui_win32_update_state(void);
 
 #endif
+HWND ui_win32_get_table_frame(void);

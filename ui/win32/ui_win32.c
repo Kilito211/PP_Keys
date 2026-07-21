@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file ui_win32.c
  * @author kilito_hyx (kilito.hyx@gmail.com)
  * @brief Win32除主窗口以外的UI
@@ -70,17 +70,18 @@ bool ui_win32_init(HWND parent)
     if (!CreateWindowExW(0, L"STATIC", L"Input", WS_CHILD | WS_VISIBLE, 20, 50, 40, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
         return false;
     {
-        HWND hCombo = CreateWindowExW(0, L"COMBOBOX", NULL, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP, 70, 48, 130, 80, parent, (HMENU)IDC_COMBO_INPUT_MODE, GetModuleHandleW(NULL), NULL);
+        HWND hCombo = CreateWindowExW(0, L"COMBOBOX", NULL, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP | WS_VSCROLL, 70, 48, 160, 100, parent, (HMENU)IDC_COMBO_INPUT_MODE, GetModuleHandleW(NULL), NULL);
         if (hCombo == NULL)
             return false;
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_SENDINPUT_VK));
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_SENDINPUT_SCANCODE));
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_KEYBD_EVENT));
+        SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_NT_SENDINPUT));
         SendMessageW(hCombo, CB_SETCURSEL, keyboard_get_mode(), 0);
     }
 
     // 创建Actions标题
-    if (!CreateWindowExW(0, L"STATIC", L"Actions", WS_CHILD | WS_VISIBLE, 20, 75, 80, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
+    if (!CreateWindowExW(0, L"STATIC", L"Actions", WS_CHILD | WS_VISIBLE, 20, 75, 50, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
         return false;
 
     // Add按钮
@@ -155,7 +156,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
             if (hCombo)
             {
                 LRESULT sel = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);
-                if (sel >= 0 && sel <= INPUT_KEYBD_EVENT)
+            if (sel >= 0 && sel <= INPUT_NT_SENDINPUT)
                     keyboard_set_mode((input_mode_t)sel);
             }
         }
@@ -206,6 +207,15 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
         return false;
     }
 }
+
+/**
+ * @brief 获取表格框架窗口句柄
+ */
+HWND ui_win32_get_table_frame(void)
+{
+    return s_table_frame;
+}
+
 
 /**
  * @brief 修改热键选项文本
@@ -282,9 +292,14 @@ bool ui_win32_refresh_action_list(void)
         s_action_items[i].delete_btn = CreateWindowExW(0, L"BUTTON", L"Delete", WS_CHILD | WS_VISIBLE, 300, y - 2 + 150, 70, 22, window_get_handle(), (HMENU)(IDC_BTN_DELETE_BASE + i), GetModuleHandleW(NULL), NULL); // 创建删除按键
         if (!s_action_items[i].key || !s_action_items[i].delay || !s_action_items[i].delete_btn)
         {
+            InvalidateRect(s_table_frame, NULL, TRUE);
+            InvalidateRect(window_get_handle(), NULL, TRUE);
             return false;
         }
     }
+    // 强制刷新表格框架和主窗口，清除 DestroyWindow 留下的残留像素
+    InvalidateRect(s_table_frame, NULL, TRUE);
+    InvalidateRect(window_get_handle(), NULL, TRUE);
     return true;
 }
 
