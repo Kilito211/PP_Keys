@@ -24,9 +24,11 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/platform/win32/include
     ${PROJECT_SOURCE_DIR}/ui/include
     ${PROJECT_SOURCE_DIR}/resource
+    ${PROJECT_SOURCE_DIR}/config/include
 )
 
 add_subdirectory(core)
+add_subdirectory(config)
 add_subdirectory(platform)
 add_subdirectory(ui)
 add_subdirectory(app)
@@ -50,4 +52,5 @@ target_link_libraries(PPKeys
         ppkeys_platform
         ppkeys_core
         ppkeys_ui
+        ppkeys_config
 )

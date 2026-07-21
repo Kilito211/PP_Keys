@@ -16,6 +16,7 @@
 #include "action_list.h"
 #include "window.h"
 #include "state_machine.h"
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -160,6 +161,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
             printf("Action List Full\n");
             return true;
         }
+        config_save();
         ui_win32_refresh_action_list();
         ui_reset_input();
         return true;
@@ -171,6 +173,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
             printf("Delete %lu\n", index);
             if (action_list_delete(index))
             {
+                config_save();
                 ui_win32_refresh_action_list();
             }
             return true;

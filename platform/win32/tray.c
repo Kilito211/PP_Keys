@@ -15,78 +15,46 @@
 #include "resource.h"
 
 static NOTIFYICONDATAW s_notify = {0};
+static bool s_exit_requested = false;
 
-/**
- * @brief 托盘初始化
- *
- * @param hwnd 窗口句柄
- * @return true 成功
- * @return false 失败
- */
 bool tray_init(HWND hwnd)
 {
     s_notify.cbSize = sizeof(NOTIFYICONDATAW);
-
     s_notify.hWnd = hwnd;
-
     s_notify.uID = 1;
-
     s_notify.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-
     s_notify.uCallbackMessage = WM_TRAY_NOTIFY;
-
     s_notify.hIcon = LoadIconW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_ICON1));
-    // s_notify.hIcon = LoadIconW(NULL, (LPCWSTR)IDI_APPLICATION);
-
     wcscpy_s(s_notify.szTip, 128, L"PPKeys");
-
     return Shell_NotifyIconW(NIM_ADD, &s_notify);
 }
 
-/**
- * @brief 移除托盘
- *
- */
 void tray_remove(void)
 {
     Shell_NotifyIconW(NIM_DELETE, &s_notify);
 }
 
-/**
- * @brief 托盘右键菜单
- *
- * @param hwnd 窗口句柄
- */
 static void tray_show_menu(HWND hwnd)
 {
     POINT pt;
-
     GetCursorPos(&pt);
     HMENU menu = CreatePopupMenu();
-
     AppendMenuW(menu, MF_STRING, ID_TRAY_SHOW, L"显示窗口");
-
     AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
-
     AppendMenuW(menu, MF_STRING, ID_TRAY_EXIT, L"退出");
-
     SetForegroundWindow(hwnd);
-
     TrackPopupMenu(menu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
-
     DestroyMenu(menu);
+    // TrackPopupMenu 有自己的模态消息循环，会消耗掉 DestroyWindow 发出的 WM_QUIT
+    // 外层 window_run() 循环将永远收不到退出信号，导致进程残留
+    // 此处重新发出 WM_QUIT
+    if (s_exit_requested)
+    {
+        s_exit_requested = false;
+        PostQuitMessage(0);
+    }
 }
 
-/**
- * @brief 托盘事件处理
- *
- * @param hwnd 窗口句柄
- * @param msg 事件类型
- * @param wParam 消息1
- * @param lParam 消息2
- * @return true
- * @return false
- */
 bool tray_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_TRAY_NOTIFY)
@@ -102,7 +70,6 @@ bool tray_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return true;
         }
     }
-
     if (msg == WM_COMMAND)
     {
         switch (LOWORD(wParam))
@@ -112,6 +79,7 @@ bool tray_process_message(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SetForegroundWindow(hwnd);
             return true;
         case ID_TRAY_EXIT:
+            s_exit_requested = true;
             DestroyWindow(hwnd);
             return true;
         }

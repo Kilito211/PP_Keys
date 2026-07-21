@@ -14,6 +14,7 @@
 #include "hotkey.h"
 #include "window.h"
 #include "ui_win32.h"
+#include "config.h"
 #include <stdio.h>
 #include <windows.h>
 
@@ -108,9 +109,11 @@ bool ui_capture_process(uint16_t vk)
         hotkey_set(vk);
         hotkey_get_name(vk, text, 32);
         ui_set_hotkey_text(text);
+        config_save();
         break;
     case UI_CAPTURE_ACTION_KEY:
         ui_win32_set_action_key(vk);
+        config_save();
         break;
     default:
         break;

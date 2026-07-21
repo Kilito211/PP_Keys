@@ -20,6 +20,7 @@
 #include "tray.h"
 #include "voice.h"
 #include "status_overlay.h"
+#include "config.h"
 #include <stdio.h>
 
 #if DEBUG
@@ -33,7 +34,7 @@ bool app_init(void)
 
     if (FAILED(hr))
     {
-        printf("COM init failed: 0x%08lX\\n", hr);
+        printf("COM init failed: 0x%08lX\n", hr);
         return false;
     }
 
@@ -77,8 +78,20 @@ bool app_init(void)
         return false;
     }
 
+    if (!config_init())
+    {
+        hotkey_deinit();
+        state_machine_deinit();
+        action_list_deinit();
+        app_event_deinit();
+        voice_deinit();
+        CoUninitialize();
+        return false;
+    }
+
     if (!window_init())
     {
+        config_deinit();
         hotkey_deinit();
         state_machine_deinit();
         action_list_deinit();
@@ -91,6 +104,7 @@ bool app_init(void)
     if (!tray_init(window_get_handle()))
     {
         window_deinit();
+        config_deinit();
         hotkey_deinit();
         state_machine_deinit();
         action_list_deinit();
@@ -104,6 +118,7 @@ bool app_init(void)
     {
         tray_remove();
         window_deinit();
+        config_deinit();
         hotkey_deinit();
         state_machine_deinit();
         action_list_deinit();
@@ -115,6 +130,7 @@ bool app_init(void)
 
     if (!macro_engine_init())
     {
+        config_deinit();
         hotkey_stop_listen();
         hotkey_deinit();
         tray_remove();
@@ -130,6 +146,7 @@ bool app_init(void)
     if (!status_overlay_init())
     {
         macro_engine_deinit();
+        config_deinit();
         hotkey_stop_listen();
         hotkey_deinit();
         tray_remove();
@@ -160,15 +177,15 @@ bool app_init(void)
     action_list_add(&action);
     action_list_add(&action_1);
     uint32_t action_count = action_list_get_count();
-    printf("APP: Action count=%lu\\n", action_count);
+    printf("APP: Action count=%lu\n", action_count);
     for (int i = 0; i < action_count; i++)
     {
         macro_action_t *temp = action_list_get(i);
-        printf("APP: Action%d -> Key:%d Delay_ms:%d\\n", i, temp->key, temp->delay_ms);
+        printf("APP: Action%d -> Key:%d Delay_ms:%d\n", i, temp->key, temp->delay_ms);
     }
 #endif // DEBUG
 
-    printf("APP Init Success\\n");
+    printf("APP Init Success\n");
     return true;
 }
 
@@ -180,6 +197,7 @@ void app_run(void)
 
 void app_deinit(void)
 {
+    config_save();
     status_overlay_deinit();
     macro_engine_deinit();
     hotkey_stop_listen();

@@ -31,6 +31,8 @@ void hotkey_deinit(void);
 
 bool hotkey_set(uint16_t key);
 
+void hotkey_set_value(uint16_t key);
+
 uint16_t hotkey_get(void);
 
 bool hotkey_get_name(uint16_t vk, wchar_t *text, uint32_t len);

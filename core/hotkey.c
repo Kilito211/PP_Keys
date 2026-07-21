@@ -88,8 +88,18 @@ void hotkey_deinit(void)
 }
 
 /**
- * @brief 自定义热键接口
- * 
+ * @brief 设置热键值（仅存值，不重新注册）
+ *
+ * @param key 键值
+ */
+void hotkey_set_value(uint16_t key)
+{
+    s_hotkey = key;
+}
+
+/**
+ * @brief 设置热键（含重新注册）
+ *
  * @param key 键值
  * @return true 成功
  * @return false 失败

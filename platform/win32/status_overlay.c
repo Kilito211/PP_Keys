@@ -10,6 +10,7 @@
  */
 
 #include "status_overlay.h"
+#include <stdio.h>
 
 #define STATUS_OVERLAY_CLASS_NAME L"PPKeysStatusOverlay"
 #define STATUS_OVERLAY_WIDTH 90
