@@ -10,6 +10,7 @@
  */
 
 #include "keyboard.h"
+#include "interception_wrapper.h"
 #include <stdio.h>
 
 typedef LONG (WINAPI *fn_NtUserSendInput_t)(UINT, LPINPUT, int);
@@ -35,11 +36,11 @@ static bool keyboard_load_nt_sendinput(void)
 
 static input_mode_t s_input_mode = INPUT_SENDINPUT_VK;
 
-bool keyboard_init(void) { return true; }
+bool keyboard_init(void) { interception_wrapper_init(); return true; }
 
 void keyboard_set_mode(input_mode_t mode)
 {
-    if (mode >= INPUT_SENDINPUT_VK && mode <= INPUT_NT_SENDINPUT)
+    if (mode >= INPUT_SENDINPUT_VK && mode <= INPUT_INTERCEPTION)
     {
         s_input_mode = mode;
         printf("Keyboard: mode -> %ls\n", keyboard_get_mode_name(mode));
@@ -56,12 +57,14 @@ const wchar_t *keyboard_get_mode_name(input_mode_t mode)
     case INPUT_SENDINPUT_SCANCODE: return L"SendInput-\u626B\u63CF\u7801";
     case INPUT_KEYBD_EVENT:        return L"keybd_event";
     case INPUT_NT_SENDINPUT:       return L"NtUserSendInput";
+    case INPUT_INTERCEPTION:       return L"Interception";
     default:                       return L"\u672A\u77E5";
     }
 }
 
 bool keyboard_send(uint16_t key, DWORD flags)
 {
+    printf("KBD: ENTER\n");fflush(stdout);
     switch (s_input_mode)
     {
     case INPUT_SENDINPUT_VK:
@@ -104,6 +107,12 @@ bool keyboard_send(uint16_t key, DWORD flags)
         if (!ok)
             printf("Keyboard: NtUserSendInput failed, status=0x%08lX\n", (unsigned long)status);
         return ok;
+    }
+    case INPUT_INTERCEPTION:
+    {
+        if (!interception_wrapper_key_down(key)) return false;
+        Sleep(50);
+        return interception_wrapper_key_up(key);
     }
     default:
         return false;

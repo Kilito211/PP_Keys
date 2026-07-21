@@ -33,7 +33,7 @@ add_subdirectory(platform)
 add_subdirectory(ui)
 add_subdirectory(app)
 
-add_executable(PPKeys WIN32
+add_executable(PPKeys #WIN32
     main.c
 )
 

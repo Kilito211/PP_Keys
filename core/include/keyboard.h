@@ -10,7 +10,8 @@ typedef enum
     INPUT_SENDINPUT_VK = 0,
     INPUT_SENDINPUT_SCANCODE,
     INPUT_KEYBD_EVENT,
-    INPUT_NT_SENDINPUT, // 直接调用 NtUserSendInput (win32u.dll)，绕过用户态 hook
+    INPUT_NT_SENDINPUT,
+    INPUT_INTERCEPTION, // Interception 驱动 (kbdclass 层注入) // 直接调用 NtUserSendInput (win32u.dll)，绕过用户态 hook
 } input_mode_t;
 
 bool keyboard_init(void);
