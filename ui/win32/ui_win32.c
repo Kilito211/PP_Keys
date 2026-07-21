@@ -66,8 +66,21 @@ bool ui_win32_init(HWND parent)
     if (s_btn_hotkey == NULL)
         return false;
 
+    // 创建输入模式选择
+    if (!CreateWindowExW(0, L"STATIC", L"Input", WS_CHILD | WS_VISIBLE, 20, 50, 40, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
+        return false;
+    {
+        HWND hCombo = CreateWindowExW(0, L"COMBOBOX", NULL, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP, 70, 48, 130, 80, parent, (HMENU)IDC_COMBO_INPUT_MODE, GetModuleHandleW(NULL), NULL);
+        if (hCombo == NULL)
+            return false;
+        SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_SENDINPUT_VK));
+        SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_SENDINPUT_SCANCODE));
+        SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_KEYBD_EVENT));
+        SendMessageW(hCombo, CB_SETCURSEL, keyboard_get_mode(), 0);
+    }
+
     // 创建Actions标题
-    if (!CreateWindowExW(0, L"STATIC", L"Actions", WS_CHILD | WS_VISIBLE, 20, 60, 80, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
+    if (!CreateWindowExW(0, L"STATIC", L"Actions", WS_CHILD | WS_VISIBLE, 20, 75, 80, 20, parent, NULL, GetModuleHandleW(NULL), NULL))
         return false;
 
     // Add按钮
@@ -134,6 +147,18 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
     {
     case IDC_BTN_START:
         app_event_post(APP_EVENT_START);
+        return true;
+    case IDC_COMBO_INPUT_MODE:
+        if (notify == CBN_SELCHANGE)
+        {
+            HWND hCombo = GetDlgItem(window_get_handle(), IDC_COMBO_INPUT_MODE);
+            if (hCombo)
+            {
+                LRESULT sel = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);
+                if (sel >= 0 && sel <= INPUT_KEYBD_EVENT)
+                    keyboard_set_mode((input_mode_t)sel);
+            }
+        }
         return true;
     case IDC_BTN_CHANGE_HOTKEY:
         if (notify == BN_CLICKED)

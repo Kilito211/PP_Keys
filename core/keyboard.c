@@ -1,91 +1,77 @@
 /**
  * @file keyboard.c
- * @author kilito_hyx (kilito.hyx@gmail.com)
- * @brief Windows键盘模拟
- * @version 0.1
- * @date 2026-07-15
- *
- * @copyright Copyright (c) 2026
- *
+ * @brief Windows键盘模拟，支持多种输入模式
  */
 
 #include "keyboard.h"
-#include <windows.h>
+#include <stdio.h>
 
-/**
- * @brief 键盘模拟初始化
- *
- * @return true 成功
- * @return false 失败
- */
-bool keyboard_init(void)
+static input_mode_t s_input_mode = INPUT_SENDINPUT_VK;
+
+bool keyboard_init(void) { return true; }
+
+void keyboard_set_mode(input_mode_t mode)
 {
-    return true;
+    if (mode >= INPUT_SENDINPUT_VK && mode <= INPUT_KEYBD_EVENT)
+    {
+        s_input_mode = mode;
+        printf("Keyboard: mode -> %ls\n", keyboard_get_mode_name(mode));
+    }
 }
 
-/**
- * @brief 发送键盘事件
- *
- * @param key 键值
- * @param flags 事件标志
- * @return true 成功
- * @return false 失败
- */
+input_mode_t keyboard_get_mode(void) { return s_input_mode; }
+
+const wchar_t *keyboard_get_mode_name(input_mode_t mode)
+{
+    switch (mode)
+    {
+    case INPUT_SENDINPUT_VK:       return L"SendInput-\u865A\u62DF\u952E\u7801";
+    case INPUT_SENDINPUT_SCANCODE: return L"SendInput-\u626B\u63CF\u7801";
+    case INPUT_KEYBD_EVENT:        return L"keybd_event";
+    default:                       return L"\u672A\u77E5";
+    }
+}
+
 bool keyboard_send(uint16_t key, DWORD flags)
 {
-    INPUT input = {0};
-    input.type = INPUT_KEYBOARD;
-    input.ki.wVk = key;
-    input.ki.dwFlags = flags;
-
-    UINT result = SendInput(1, &input, sizeof(INPUT));
-
-    return result == 1;
+    switch (s_input_mode)
+    {
+    case INPUT_SENDINPUT_VK:
+    {
+        INPUT input = {0};
+        input.type = INPUT_KEYBOARD;
+        input.ki.wVk = key;
+        input.ki.dwFlags = flags;
+        return SendInput(1, &input, sizeof(INPUT)) == 1;
+    }
+    case INPUT_SENDINPUT_SCANCODE:
+    {
+        INPUT input = {0};
+        input.type = INPUT_KEYBOARD;
+        input.ki.wScan = (WORD)MapVirtualKeyW(key, MAPVK_VK_TO_VSC);
+        input.ki.dwFlags = flags | KEYEVENTF_SCANCODE;
+        return SendInput(1, &input, sizeof(INPUT)) == 1;
+    }
+    case INPUT_KEYBD_EVENT:
+    {
+        BYTE vk = (BYTE)key;
+        keybd_event(vk, MapVirtualKeyW(vk, MAPVK_VK_TO_VSC),
+                    (flags & KEYEVENTF_KEYUP) ? KEYEVENTF_KEYUP : 0, 0);
+        return true;
+    }
+    default:
+        return false;
+    }
 }
 
-/**
- * @brief 按下按键
- *
- * @param key 键值
- * @return true 成功
- * @return false 失败
- */
-bool keyboard_key_down(uint16_t key)
-{
-    return keyboard_send(key, 0);
-}
+bool keyboard_key_down(uint16_t key) { return keyboard_send(key, 0); }
+bool keyboard_key_up(uint16_t key)   { return keyboard_send(key, KEYEVENTF_KEYUP); }
 
-/**
- * @brief 松开按键
- *
- * @param key 键值
- * @return true 成功
- * @return false 失败
- */
-bool keyboard_key_up(uint16_t key)
+bool keyboard_press(uint16_t key)
 {
+    if (!keyboard_send(key, 0)) return false;
+    Sleep(15);
     return keyboard_send(key, KEYEVENTF_KEYUP);
 }
 
-/**
- * @brief 完整按下并松开按键
- *
- * @param key 键值
- * @return true 成功
- * @return false 失败
- */
-bool keyboard_press(uint16_t key)
-{
-    if (!keyboard_key_down(key))
-        return false;
-    // 中间可以加入延迟
-    return keyboard_key_up(key);
-}
-
-/**
- * @brief 析构键盘模块
- *
- */
-void keyboard_deinit(void)
-{
-}
+void keyboard_deinit(void) {}
