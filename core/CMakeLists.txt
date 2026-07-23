@@ -1,4 +1,4 @@
-﻿add_library(ppkeys_core
+add_library(ppkeys_core
     hotkey.c
     keyboard.c
     action_list.c
@@ -6,6 +6,7 @@
     state_machine.c
     single_instance.c
     interception_wrapper.c
+    deviceio_wrapper.c
 )
 
 target_link_libraries(ppkeys_core

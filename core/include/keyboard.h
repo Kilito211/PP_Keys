@@ -11,7 +11,8 @@ typedef enum
     INPUT_SENDINPUT_SCANCODE,
     INPUT_KEYBD_EVENT,
     INPUT_NT_SENDINPUT,
-    INPUT_INTERCEPTION, // Interception 驱动 (kbdclass 层注入) // 直接调用 NtUserSendInput (win32u.dll)，绕过用户态 hook
+    INPUT_INTERCEPTION,  // Interception 驱动 (kbdclass 层过滤驱动,需安装驱动)
+    INPUT_DEVICEIO,      // DeviceIoControl -> \\.\\KEYBOARD\\0 (需管理员权限,免装驱动)
 } input_mode_t;
 
 bool keyboard_init(void);

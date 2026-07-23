@@ -11,6 +11,7 @@
 
 #include "keyboard.h"
 #include "interception_wrapper.h"
+#include "deviceio_wrapper.h"
 #include <stdio.h>
 
 typedef LONG (WINAPI *fn_NtUserSendInput_t)(UINT, LPINPUT, int);
@@ -40,7 +41,7 @@ bool keyboard_init(void) { interception_wrapper_init(); return true; }
 
 void keyboard_set_mode(input_mode_t mode)
 {
-    if (mode >= INPUT_SENDINPUT_VK && mode <= INPUT_INTERCEPTION)
+    if (mode >= INPUT_SENDINPUT_VK && mode <= INPUT_DEVICEIO)
     {
         s_input_mode = mode;
         printf("Keyboard: mode -> %ls\n", keyboard_get_mode_name(mode));
@@ -58,6 +59,7 @@ const wchar_t *keyboard_get_mode_name(input_mode_t mode)
     case INPUT_KEYBD_EVENT:        return L"keybd_event";
     case INPUT_NT_SENDINPUT:       return L"NtUserSendInput";
     case INPUT_INTERCEPTION:       return L"Interception";
+    case INPUT_DEVICEIO:           return L"DeviceIoControl";
     default:                       return L"\u672A\u77E5";
     }
 }
