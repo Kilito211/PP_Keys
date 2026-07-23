@@ -110,9 +110,9 @@ bool keyboard_send(uint16_t key, DWORD flags)
     }
     case INPUT_INTERCEPTION:
     {
-        if (!interception_wrapper_key_down(key)) return false;
-        Sleep(50);
-        return interception_wrapper_key_up(key);
+        if (flags & KEYEVENTF_KEYUP)
+            return interception_wrapper_key_up(key);
+        return interception_wrapper_key_down(key);
     }
     default:
         return false;
