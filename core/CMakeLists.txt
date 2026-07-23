@@ -7,6 +7,7 @@ add_library(ppkeys_core
     single_instance.c
     interception_wrapper.c
     deviceio_wrapper.c
+    dd_wrapper.c
 )
 
 target_link_libraries(ppkeys_core

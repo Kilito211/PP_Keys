@@ -12,7 +12,9 @@ typedef enum
     INPUT_KEYBD_EVENT,
     INPUT_NT_SENDINPUT,
     INPUT_INTERCEPTION,  // Interception 驱动 (kbdclass 层过滤驱动,需安装驱动)
-    INPUT_DEVICEIO,      // DeviceIoControl -> \\.\\KEYBOARD\\0 (需管理员权限,免装驱动)
+    INPUT_DEVICEIO,
+    INPUT_DD,      // DeviceIoControl -> \\.\\KEYBOARD\\0 (需管理员权限,免装驱动)
+    INPUT_COUNT,
 } input_mode_t;
 
 bool keyboard_init(void);

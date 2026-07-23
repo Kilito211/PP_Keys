@@ -79,6 +79,7 @@ bool ui_win32_init(HWND parent)
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_NT_SENDINPUT));
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_INTERCEPTION));
         SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_DEVICEIO));
+        SendMessageW(hCombo, CB_ADDSTRING, 0, (LPARAM)keyboard_get_mode_name(INPUT_DD));
         SendMessageW(hCombo, CB_SETCURSEL, keyboard_get_mode(), 0);
     }
 
@@ -158,7 +159,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
             if (hCombo)
             {
                 LRESULT sel = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);
-            if (sel >= 0 && sel <= INPUT_DEVICEIO)
+                if (sel >= 0 && sel < INPUT_COUNT)
                     keyboard_set_mode((input_mode_t)sel);
             }
         }
