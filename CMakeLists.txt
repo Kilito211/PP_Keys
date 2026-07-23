@@ -53,4 +53,5 @@ target_link_libraries(PPKeys
         ppkeys_core
         ppkeys_ui
         ppkeys_config
+        setupapi
 )

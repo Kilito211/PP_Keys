@@ -54,13 +54,13 @@ const wchar_t *keyboard_get_mode_name(input_mode_t mode)
 {
     switch (mode)
     {
-    case INPUT_SENDINPUT_VK:       return L"SendInput-\u865A\u62DF\u952E\u7801";
-    case INPUT_SENDINPUT_SCANCODE: return L"SendInput-\u626B\u63CF\u7801";
+    case INPUT_SENDINPUT_VK:       return L"SendInput-虚拟键码";
+    case INPUT_SENDINPUT_SCANCODE: return L"SendInput-扫描码";
     case INPUT_KEYBD_EVENT:        return L"keybd_event";
     case INPUT_NT_SENDINPUT:       return L"NtUserSendInput";
     case INPUT_INTERCEPTION:       return L"Interception";
     case INPUT_DEVICEIO:           return L"DeviceIoControl";
-    default:                       return L"\u672A\u77E5";
+    default:                       return L"未知";
     }
 }
 
@@ -115,6 +115,13 @@ bool keyboard_send(uint16_t key, DWORD flags)
         if (flags & KEYEVENTF_KEYUP)
             return interception_wrapper_key_up(key);
         return interception_wrapper_key_down(key);
+    }
+    case INPUT_DEVICEIO:
+    {
+        printf("KBD: DEVICEIO key=0x%04X flags=%lu\n", (unsigned)key, (unsigned long)flags); fflush(stdout);
+        if (flags & KEYEVENTF_KEYUP)
+            return deviceio_wrapper_key_up(key);
+        return deviceio_wrapper_key_down(key);
     }
     default:
         return false;

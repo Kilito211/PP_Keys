@@ -158,7 +158,7 @@ bool ui_win32_process_command(WPARAM wParam, LPARAM lParam)
             if (hCombo)
             {
                 LRESULT sel = SendMessageW(hCombo, CB_GETCURSEL, 0, 0);
-            if (sel >= 0 && sel <= INPUT_INTERCEPTION)
+            if (sel >= 0 && sel <= INPUT_DEVICEIO)
                     keyboard_set_mode((input_mode_t)sel);
             }
         }

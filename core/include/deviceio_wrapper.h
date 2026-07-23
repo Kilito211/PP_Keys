@@ -3,6 +3,7 @@
  * @brief DeviceIoControl -> \\.\\KEYBOARD\\0
  *        直接向 kbdclass 驱动发送 IOCTL 插入扫描码
  *        无需安装第三方驱动,只需管理员权限
+ *        增强版: NtDeviceIoControlFile 主路径 + DeviceIoControl 回退
  * @version 0.1
  * @date 2026-07-23
  */
@@ -39,9 +40,17 @@ typedef struct {
 #define DEVIO_KEY_BREAK 1
 #define DEVIO_KEY_E0    2
 
+/* 多击发送最大条数 */
+#define DEVIO_MAX_STROKES 4
+typedef struct {
+    DEVIO_KEYBOARD_INPUT_DATA strokes[DEVIO_MAX_STROKES];
+    UINT count;
+} DEVIO_STROKE_BATCH;
+
 bool deviceio_wrapper_init(void);
 bool deviceio_wrapper_key_down(uint16_t vk);
 bool deviceio_wrapper_key_up(uint16_t vk);
+bool deviceio_wrapper_send_batch(const DEVIO_STROKE_BATCH *batch);
 void deviceio_wrapper_deinit(void);
 
 #endif /* DEVICEIO_WRAPPER_H */
